@@ -3,8 +3,8 @@ from gensim.models.word2vec import LineSentence
 from gensim.models.keyedvectors import KeyedVectors
 from data_utils import dump_pkl
 import os
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 def read_lines(path, col_sep=None):
     lines = []
@@ -47,11 +47,13 @@ def build(train_x_seg_path, test_y_seg_path, test_seg_path, out_path=None, sente
     your code
     w2v = （one line）
     """
+    # "word '技师' not in vocabulary" 传入[sentences]这样一个二维的此列表
+    w2v = Word2Vec(sentences,size=256,sg=1,min_count = 1)
     w2v.wv.save_word2vec_format(w2v_bin_path, binary=True)
     print("save %s ok." % w2v_bin_path)
     # test
-    sim = w2v.wv.similarity('技师', '车主')
-    print('技师 vs 车主 similarity score:', sim)
+    # sim = w2v.wv.similarity('技师', '车主')
+    # print('技师 vs 车主 similarity score:', sim)
     # load model
     model = KeyedVectors.load_word2vec_format(w2v_bin_path, binary=True)
     word_dict = {}

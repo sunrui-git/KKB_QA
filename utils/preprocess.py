@@ -5,12 +5,13 @@ from jieba import posseg
 import jieba
 from tokenizer import segment
 import os
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 REMOVE_WORDS = ['|', '[', ']', '语音', '图片', ' ']
 
 
+# 获取停用词
 def read_stopwords(path):
     lines = set()
     with open(path, mode='r', encoding='utf-8') as f:
@@ -20,6 +21,7 @@ def read_stopwords(path):
     return lines
 
 
+# 删除REMOVE_WORDS中的字符
 def remove_words(words_list):
     words_list = [word for word in words_list if word not in REMOVE_WORDS]
     return words_list
@@ -38,8 +40,8 @@ def parse_data(train_path, test_path):
     train_y = train_y.apply(preprocess_sentence)
     print('train_y is ', len(train_y))
     # if 'Report' in train_df.columns:
-        # train_y = train_df.Report
-        # print('train_y is ', len(train_y))
+    # train_y = train_df.Report
+    # print('train_y is ', len(train_y))
 
     test_df = pd.read_csv(test_path, encoding='utf-8')
     test_df.fillna('', inplace=True)
@@ -53,6 +55,7 @@ def parse_data(train_path, test_path):
 
 
 def preprocess_sentence(sentence):
+    # 分词
     seg_list = segment(sentence.strip(), cut_type='word')
     seg_list = remove_words(seg_list)
     seg_line = ' '.join(seg_list)
@@ -63,5 +66,3 @@ if __name__ == '__main__':
     # 需要更换成自己数据的存储地址
     parse_data('{}/datasets/AutoMaster_TrainSet.csv'.format(BASE_DIR),
                '{}/datasets/AutoMaster_TestSet.csv'.format(BASE_DIR))
-
-
