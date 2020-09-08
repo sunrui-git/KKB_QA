@@ -1,6 +1,5 @@
 import tensorflow as tf
-import gensim
-import numpy as np
+
 
 class Encoder(tf.keras.layers.Layer):
     def __init__(self, vocab_size, embedding_dim, enc_units, batch_sz, embedding_matrix):
@@ -12,24 +11,21 @@ class Encoder(tf.keras.layers.Layer):
         定义Embedding层，加载预训练的词向量
         your code
         """
+        self.embedding = tf.keras.layers.Embedding(vocab_size,
+                                                   embedding_dim,
+                                                   weights=[embedding_matrix],
+                                                   trainable=False)
+        # self.embedding = tf.keras.layers.Embedding(vocab_size, embedding_dim)
         # tf.keras.layers.GRU自动匹配cpu、gpu
-        # word2vecModel = gensim.models.Word2Vec.load('{}/datasets/word2vec.txt')
-        # word2idx = {'_PAD',0}
-        # vocab_list = [(k,word2vecModel.wv[k]) for k,v in word2vecModel.wv.vocab.items()]
-        self.embedding = tf.keras.layers.Embedding(input_dim=vocab_size
-                                                    ,output_dim = embedding_dim
-                                                    ,embeddings_initializer=tf.keras.initializers.Constant(embedding_matrix)
-                                                    ,trainable=False)
         """
         定义单向的RNN、GRU、LSTM层
         your code
         """
-        # self.rnn = tf.keras.layers.RNN(self.enc_units,return_sequences=True,return_state=True)
-        # self.lstm = tf.keras.layers.LSTM(self.enc_units,return_sequences=True,return_state=True)
         self.gru = tf.keras.layers.GRU(self.enc_units,
                                        return_sequences=True,
                                        return_state=True,
                                        recurrent_initializer='glorot_uniform')
+
         self.bigru = tf.keras.layers.Bidirectional(self.gru, merge_mode='concat')
 
     def call(self, x, hidden):

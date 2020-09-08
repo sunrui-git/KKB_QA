@@ -43,17 +43,18 @@ def build(train_x_seg_path, test_y_seg_path, test_seg_path, out_path=None, sente
     print('train w2v model...')
     # train model
     """
-    通过gensim工具完成word2vec的训练，输入格式采用sentences，使用skip-gram，embedding维度256
-    your code
-    w2v = （one line）
-    """
+        通过gensim工具完成word2vec的训练，输入格式采用sentences，使用skip-gram，embedding维度256
+        your code
+        w2v = （one line）
+        """
     # "word '技师' not in vocabulary" 传入[sentences]这样一个二维的此列表
-    w2v = Word2Vec(sentences,size=256,sg=1,min_count = 1)
+    w2v = Word2Vec(sg=1, sentences=LineSentence(sentence_path),
+                   size=256, window=5, min_count=min_count, iter=40)
     w2v.wv.save_word2vec_format(w2v_bin_path, binary=True)
     print("save %s ok." % w2v_bin_path)
     # test
-    # sim = w2v.wv.similarity('技师', '车主')
-    # print('技师 vs 车主 similarity score:', sim)
+    sim = w2v.wv.similarity('技师', '车主')
+    print('技师 vs 车主 similarity score:', sim)
     # load model
     model = KeyedVectors.load_word2vec_format(w2v_bin_path, binary=True)
     word_dict = {}
