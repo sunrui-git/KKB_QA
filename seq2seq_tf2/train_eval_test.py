@@ -6,7 +6,7 @@ from seq2seq_tf2.test_helper import beam_decode, greedy_decode
 from tqdm import tqdm
 from utils.data_utils import get_result_filename
 import pandas as pd
-# from rouge import Rouge
+from rouge import Rouge
 import pprint
 
 

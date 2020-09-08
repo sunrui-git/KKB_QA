@@ -16,7 +16,7 @@ class Encoder(tf.keras.layers.Layer):
         # word2vecModel = gensim.models.Word2Vec.load('{}/datasets/word2vec.txt')
         # word2idx = {'_PAD',0}
         # vocab_list = [(k,word2vecModel.wv[k]) for k,v in word2vecModel.wv.vocab.items()]
-        embedding_layer = tf.keras.layers.Embedding(input_dim=vocab_size
+        self.embedding = tf.keras.layers.Embedding(input_dim=vocab_size
                                                     ,output_dim = embedding_dim
                                                     ,embeddings_initializer=tf.keras.initializers.Constant(embedding_matrix)
                                                     ,trainable=False)
@@ -24,7 +24,12 @@ class Encoder(tf.keras.layers.Layer):
         定义单向的RNN、GRU、LSTM层
         your code
         """
-        rnn_out = tf.keras.layers.LSTMCell()
+        # self.rnn = tf.keras.layers.RNN(self.enc_units,return_sequences=True,return_state=True)
+        # self.lstm = tf.keras.layers.LSTM(self.enc_units,return_sequences=True,return_state=True)
+        self.gru = tf.keras.layers.GRU(self.enc_units,
+                                       return_sequences=True,
+                                       return_state=True,
+                                       recurrent_initializer='glorot_uniform')
         self.bigru = tf.keras.layers.Bidirectional(self.gru, merge_mode='concat')
 
     def call(self, x, hidden):

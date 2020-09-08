@@ -11,6 +11,7 @@ class BahdanauAttention(tf.keras.layers.Layer):
     def call(self, dec_hidden, enc_output):
         """
         :param dec_hidden: shape=(16, 256)
+
         :param enc_output: shape=(16, 200, 256)
         :param enc_padding_mask: shape=(16, 200)
         :param use_coverage:
@@ -29,10 +30,13 @@ class BahdanauAttention(tf.keras.layers.Layer):
         your code
         """
         # Calculate attention distribution
+        hidden_with_time_axis = tf.expand_dims(dec_hidden, 1)
+        score = self.V(tf.nn.tanh(self.W1(enc_output) + self.W2(hidden_with_time_axis)))
         """
         归一化score，得到attn_dist
         your code
         """
+        attn_dist = tf.nn.softmax(score,axis=1)
         # context_vector shape after sum == (batch_size, hidden_size)
         context_vector = attn_dist * enc_output  # shape=(16, 200, 256)
         context_vector = tf.reduce_sum(context_vector, axis=1)  # shape=(16, 256)
@@ -48,16 +52,24 @@ class Decoder(tf.keras.layers.Layer):
         定义Embedding层，加载预训练的词向量
         your code
         """
-        
+        self.embedding = tf.keras.layers.Embedding(input_dim=vocab_size
+                                                   , output_dim=embedding_dim
+                                                   , embeddings_initializer=tf.keras.initializers.Constant(embedding_matrix)
+                                                   , trainable=False)
         """
         定义单向的RNN、GRU、LSTM层
         your code
         """
         # self.dropout = tf.keras.layers.Dropout(0.5)
+        # self.rnn = tf.keras.layers.RNN(self.enc_units, return_sequences=True, return_state=True)
+        # self.lstm = tf.keras.layers.LSTM(self.enc_units, return_sequences=True, return_state=True)
+        self.gru = tf.keras.layers.GRU(self.dec_units, return_sequences=True, return_state=True,
+                                       recurrent_initializer='glorot_uniform')
         """
         定义最后的fc层，用于预测词的概率
         your code
         """
+        self.fc = tf.keras.layers.Dense(vocab_size)
 
     def call(self, x, hidden, enc_output, context_vector):
         # enc_output shape == (batch_size, max_length, hidden_size)
